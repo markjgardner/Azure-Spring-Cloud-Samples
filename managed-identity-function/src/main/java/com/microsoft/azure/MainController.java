@@ -6,27 +6,17 @@
 package com.microsoft.azure;
 
 import com.azure.core.credential.TokenRequestContext;
-import com.azure.core.http.HttpResponse;
-import com.azure.identity.ManagedIdentityCredential;
-import com.azure.identity.ManagedIdentityCredentialBuilder;
 import com.fasterxml.jackson.core.*;
-import com.nimbusds.oauth2.sdk.TokenRequest;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.annotation.PostConstruct;
-
 import java.net.*;
 import java.io.*;
-import java.time.Duration;
-import java.util.Arrays;
 
 @RestController
 public class MainController {
@@ -44,15 +34,12 @@ public class MainController {
             RestTemplate restTemplate = new RestTemplate();
      
             HttpHeaders headers = new HttpHeaders();
-            headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
             headers.setBearerAuth(getMsiToken());
-            HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
+            HttpEntity<String> entity = new HttpEntity<String>(null, headers);
 
             String requestUri = String.format("%s/api/%s?name=%s", functionUri, triggerPath, name);
-     
-            ResponseEntity<HttpResponse> result = restTemplate.exchange(requestUri, HttpMethod.GET, entity, HttpResponse.class);
-                       
-            return String.format("Function Response: %s", result.getBody());
+            String result = restTemplate.exchange(requestUri, HttpMethod.GET, entity, String.class).getBody();
+            return result;            
         } catch (Exception ex) {
             return String.format("Failed to invoke function %s", functionUri);
         }
