@@ -23,7 +23,8 @@ public class MainController {
 
     @Value("${azure.function.uri:local}")
     private String functionUri;
-    private String triggerPath = "httptrigger";
+    @Value("${azure.function.triggerPath}")
+    private String triggerPath;
 
     @GetMapping(path="/func/{name}")
     public String invokeFunction(@PathVariable String name) {
